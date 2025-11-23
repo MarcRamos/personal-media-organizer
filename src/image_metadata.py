@@ -1,5 +1,8 @@
 from datetime import datetime
 from PIL import Image
+import argparse
+import os
+
 
 def get_image_year_month(path):
     """
@@ -39,4 +42,34 @@ def get_image_year_month(path):
                 # If weird format: ignore and continue
                 pass
 
+    # If we reached here, EXIF was not found
+    mtime = os.path.getmtime(path)
+    mod_date = datetime.fromtimestamp(mtime)
+    return mod_date.year, mod_date.month
+    
     raise Exception(f"No valid EXIF datetime found in image {path}.")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Process an image and extract date metadata."
+    )
+
+    # --- Positional argument ---
+    parser.add_argument(
+        "input",
+        help="Path to the image file"
+    )
+
+    args = parser.parse_args()
+
+    path = args.input
+    print("Input:", path)
+
+    year, month = get_image_year_month(path)
+
+    print(f"Output: Year = {year}, Month = {month}")
+
+
+if __name__ == "__main__":
+    main()
